@@ -28,7 +28,7 @@ export const otherRouter = {
         title: '首页',
         notCache: true
       },
-      component: () => import('@/view/count/panel-data/panelData')
+      component: () => import('@/view/home/home.vue')
     }
     // { path: 'home', title: { i18n: 'home' }, name: 'home_index', component: () => import('@/view/home/home.vue') },
     // { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: () => import('@/views/own-space/own-space.vue') },
