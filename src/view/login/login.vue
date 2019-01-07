@@ -49,34 +49,22 @@
         login({
           username: userName,
           password: password
-        }).then(res => {
-          if (res.success === true) {
-            this.setStore("accessToken", res.result);
-            // 获取用户信息
-            getUserInfo().then(res => {
-              if (res.success === true) {
-                // 避免超过大小限制
-                delete res.result.permissions;
+        }).then(data => {
+          this.setStore("accessToken", data.token);
+          // 保存7天
+          Cookies.set("userInfo", JSON.stringify(data.user), {
+            expires: 7
+          });
 
-                // 保存7天
-                Cookies.set("userInfo", JSON.stringify(res.result), {
-                  expires: 7
-                });
-
-                this.setStore("userInfo", res.result);
-                //头像
-                this.$store.commit("setAvatarPath", res.result.avatar);
-                // 加载菜单
-                util.initRouter(this);
-                this.$router.push({
-                  name: "home"
-                });
-              }
-            });
-          } else {
-            this.$Message.error(res.message || '登录失败');
-          }
-        })
+          this.setStore("userInfo", data.user);
+          //头像
+          this.$store.commit("setAvatarPath", data.user.avatar);
+          // 加载菜单
+          util.initRouter(this);
+          this.$router.push({
+            name: "home"
+          });
+        }).catch(data => {})
       }
     }
   }

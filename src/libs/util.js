@@ -264,8 +264,8 @@ util.initRouter = function (vm) {
   }
   let userId = JSON.parse(Cookies.get("userInfo")).id;
   // 加载菜单
-  getMenuList(userId).then(res => {
-    let menuData = res.result;
+  getMenuList(userId).then(data => {
+    let menuData = data;
     if (menuData === null || menuData === "" || menuData === undefined) {
       return;
     }

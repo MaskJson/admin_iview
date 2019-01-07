@@ -13,7 +13,9 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: '',
-    pro: ''
+    dev: '/api',
+    pro: '/api'
   }
 }
+
+export const imgBaseUrl = "/api/img"

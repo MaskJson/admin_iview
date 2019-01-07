@@ -60,6 +60,10 @@
       pageSize: {
         type: Number,
         default: 10
+      },
+      search: {
+        type: String,
+        default: null
       }
     },
     data() {
@@ -70,7 +74,7 @@
           total: 0,
           pageSize: 10
         },
-        list: [],
+        list: [{}],
         selected: []
       }
     },
@@ -80,7 +84,7 @@
         if (this.save.modal) {
           this.$emit('on-save');
         } else {
-          this.handlers.saveHandler();
+          this.handlers['save']();
         }
       },
       // 页码改变刷新数据
@@ -119,7 +123,7 @@
       getSearchData() {
         const params = Object.assign({}, this.searchData);
         if (!this.unPage) {
-          params.page = this.page.current - 1;
+          params.page = this.page.current;
           params.size = this.page.pageSize;
         }
         return params;
@@ -129,7 +133,7 @@
         this.$emit('export', this.$refs['table'], this.list);
       },
       // 最终执行managerHandler事件
-      managerHandler(handler, handlerData, type, params, isAsync, unFresh) {
+      managerHandler(handler, handlerData, type, params, isAsync, unFresh, unMsg) {
         if (handler) {
           if (!isAsync) {
             this.showSpin = true;
@@ -139,21 +143,11 @@
                 if (type == 3) {
                   const data = res.data;
                   if (!this.unPage) {
-                    this.list = data.content || [];
-                    this.page.total = data.totalElements;
+                    this.list = data.list || [];
+                    this.page.total = data.total;
                   } else {
                     this.list = data;
                   }
-                } else if (type == 'freshRow') { // 特殊处理
-                  this.showSpin = true;
-                  this.handlers.getDetail({id: params.id}).then(res => {
-                    this.showSpin = false;
-                    if (res.code == 200) {
-                      this.data.splice(params.index, 1, res.data);
-                    }
-                  }).catch(res => {
-                    this.showSpin = false;
-                  })
                 }
                 this.$emit('on-success', type, res.data || {}); // 响应组件请求成功监听，特殊处理
                 if (!unFresh) { // 需要刷新数据
@@ -167,8 +161,8 @@
               }
               this.showSpin = false;
             }).catch(res => {
+              this.$Message.error('请求失败');
               this.showSpin = false;
-              this.$emit('on-error', type);
             })
           } else {
             handler(handlerData);
@@ -177,14 +171,10 @@
       },
       // emitManagerHandler, 响应事件触发
       emitManagerHandler(type, data) {
-        let [handler, handlerData, isAsync, unFresh, params, isBatch] = [null, null, data.isAsync, data.unFresh, data.params || {}, data.isBatch]; // 方法、是否异步、参数、是否批量操作
-        if (isBatch && this.removeChecked().length == 0) {
-          this.$Message.warning('请选择操作项');
-          return;
-        }
-        const {del, search} = this.handlers;
+        let [handler, handlerData, isAsync, unMsg, unFresh, params, isBatch] = [null, null, data.isAsync, data.unMsg, data.unFresh, data.params || {}, data.isBatch]; // 方法、是否异步、参数、是否为批量操作
+        const {save, del, search, getDetail} = this.handlers;
         switch (type) {
-          case 3: handler = search; handlerData = this.getSearchData();break; // 查
+          case 3: handler = search;if (this.search) handler = this.handlers[this.search]; handlerData = this.getSearchData();break; // 查
           case 1: handler = del;handlerData = {ids: [params.id].join(',')};break; // 根据id 删
           case 2: // 批量删
             handlerData = {ids: this.removeChecked().join(',')};
@@ -196,7 +186,7 @@
             if (isBatch) params.ids = this.removeChecked().join(',');
             break; // 骚操作，直接传方法名
         }
-        this.managerHandler(handler, handlerData, type, data, isAsync, unFresh);
+        this.managerHandler(handler, handlerData, type, data, isAsync, unFresh, unMsg);
       }
     },
     inject: ['handlers'],

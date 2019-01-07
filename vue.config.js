@@ -90,11 +90,11 @@ module.exports = {
     compress: true,
     overlay: {
       warnings: false,
-      errors: false
+      errors: false,
     },
     proxy: {
-      '/console': {
-        target: 'http://192.168.100.142:9000',  // 请求本地 需要后台接口
+      '/api': {
+        target: 'http://127.0.0.1:8888',  // 请求本地 需要后台接口
         changeOrigin: true,
         ws: true
       }

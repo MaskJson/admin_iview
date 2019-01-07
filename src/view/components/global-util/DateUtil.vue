@@ -42,14 +42,6 @@
           }
         }
       }
-    },
-    watch: {
-      startTime(val) {
-        this.start = val;
-      },
-      endTime(val) {
-        this.end = val;
-      }
     }
   }
 </script>

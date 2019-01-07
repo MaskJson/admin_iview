@@ -20,13 +20,14 @@
     当存在上传时，需要将model里对应的key给data管理，以便数据清空，清空表单时，调用upload组件的handleRemove重置upload组件
 -->
 <script>
-  import MyUpload from '@/view/components/upload/MyUpload';
-  import {aliCallbackImgUrl} from "../../../libs/aliUploadConfig";
+  import MyUpload from '@/view/components/global-util/MyUpload';
+  import {imgBaseUrl} from "../../../config";
+  // import {aliCallbackImgUrl} from "../../../libs/aliUploadConfig";
 
   export default {
     name: "FormUtil",
     components: {
-      MyUpload,
+      // MyUpload,
     },
     props: {
       model: {
@@ -56,7 +57,6 @@
     },
     data() {
       return {
-        uploadList: [],
         uploadKey: ''
       }
     },
@@ -125,9 +125,6 @@
       let props = {label: item.label, prop: item.value};
       const formItem = h('FormItem', {
         props: props,
-        'class': {
-          'my-upload': item.compName == 'upload'
-        }
       }, renderDom.call(this, item, h));
       result.push(formItem);
     });
@@ -168,15 +165,14 @@
       placeholder: item.placeholder || '',
       disabled: item.disabled && !!_this.model.id || item.unable,
       type: item.type,
-      rows: item.rows || 3,
-      maxlength: 150
+      rows: item.rows || 3
     }
     if (!!item.mutiple) props.mutiple = true;
     if (compName == 'DatePicker') props.type = 'datetime';
     children.push(h(compName, {
       props: props,
       on: renderEvent.call(this, item.value, compName)
-    }, ['CheckGroup', 'RadioGroup', 'Select'].indexOf(compName) > -1 ? renderChildren(compName, item.list) : ''));
+    }, ['CheckGroup', 'RadioGroup', 'Select'].indexOf(compName) > -1 ? renderChildren(compName, item.list) : compName=='Checkbox'?item.label:''));
     return children;
   }
 
@@ -186,7 +182,7 @@
   function renderEvent(key, compName) {
     return {
       'on-change': (event) => {
-        this.model[key] = ['CheckboxGroup', 'RadioGroup', 'Select', 'DatePicker'].indexOf(compName) > -1 ? event : event.target.value;
+        this.model[key] = ['CheckboxGroup', 'RadioGroup', 'Select', 'DatePicker', 'Checkbox'].indexOf(compName) > -1 ? event : event.target.value;
       }
     }
   }
@@ -198,14 +194,14 @@
     const [children, _this] = [[], this];
     children.push(h(MyUpload, {
       props: {
-        'default-file-list': _this.uploadList,
-        'uploaded': _this.model[item.value],
-        'on-remove': uploadHandler.bind(this, 0, item.value), // 删除上传列表
+        'upload-list': _this.model[_this.uploadKey],
+        'on-remove': removeHandler.bind(this), // 删除上传列表
         'on-success': handleSuccess.bind(_this),
-        'format': ['jpg','jpeg','png','gif','bmp'],
-        'max-size': 1024,
-        'on-format-error': uploadHandler.bind(this, 1, item.value), // 图片格式错误
-        'on-exceeded-size': uploadHandler.bind(this, 2, item.value),
+        'format': item.format || ['jpg','jpeg','png'],
+        'max-size': 2048,
+        'mutiple': !!item.mutiple,
+        // 'on-format-error': uploadHandler.bind(this, 1, item.value), // 图片格式错误
+        // 'on-exceeded-size': uploadHandler.bind(this, 2, item.value),
         'type': 'drag'
       },
       'class': {
@@ -228,11 +224,7 @@
     if (src) {
       children.push(h('p',{
         'class': {
-          hide: !_this.model[item.value],
-          pt20: true
-        },
-        style: {
-          // marginLeft: '80px'
+          hide: !_this.model[item.value].length,
         }
       }, '（已上传）'))
     }
@@ -241,7 +233,7 @@
         hide: true
       },
       props: {
-        value: _this.model[item.value]
+        value: _this.model[item.value].join(',')
       },
       on: renderEvent.call(this, item.value, 'Input')
     }, null));
@@ -251,20 +243,23 @@
   /**
    * 图片上传handler
    */
-  function uploadHandler(flag, value) {
-    switch (flag) {
-      case 0:this.model[value] = '';break;
-      case 1:this.$Message.warning('请上传jpg,jpeg,png,gif,bmp格式的图片');break;
-      case 2:this.$Message.warning('图片大小必须小于1M');break;
-      default: break;
-    }
+  function removeHandler(index) {
+    // switch (flag) {
+    //   case 0:this.model[value] = '';break;
+    //   case 1:this.$Message.warning('请上传jpg,jpeg,png格式的图片');break;
+    //   case 2:this.$Message.warning('图片大小必须小于1M');break;
+    //   default: break;
+    // }
+    this.model[this.uploadKey].splice(index, 1);
   }
 
   /**
    * 图片上传成功
    */
-  function handleSuccess(res) {
-    this.model[this.uploadKey] = aliCallbackImgUrl + res.name;
+  function handleSuccess(res, file) {
+    if (res.code == 200) {
+      this.model[this.uploadKey].push(res.data);
+    }
   }
 </script>
 
