@@ -13,33 +13,24 @@
               </Form-item>
 
               <span v-if="drop">
-                            <!--<Form-item label="手机号" prop="mobile">-->
-                <!--<Input type="text" v-model="searchForm.mobile" clearable placeholder="请输入手机号"-->
-                <!--style="width: 200px"/>-->
-                <!--</Form-item>-->
-                <!--<Form-item label="邮箱" prop="email">-->
-                <!--<Input type="text" v-model="searchForm.email" clearable placeholder="请输入邮箱"-->
-                <!--style="width: 200px"/>-->
-                <!--</Form-item>-->
-
-                              <Form-item label="用户类型" prop="type">
-                                <Select v-model="searchForm.type" placeholder="请选择" clearable style="width: 200px">
-                                  <Option value="0">普通用户</Option>
-                                  <Option value="1">管理员</Option>
-                                </Select>
-                              </Form-item>
-                              <Form-item label="用户状态" prop="status">
-                                <Select v-model="searchForm.status" placeholder="请选择" clearable style="width: 200px">
-                                  <Option value="0">正常</Option>
-                                  <Option value="-1">禁用</Option>
-                                </Select>
-                              </Form-item>
-                              <Form-item label="创建时间">
-                                <DatePicker v-model="selectDate" type="daterange" format="yyyy-MM-dd" clearable
-                                            @on-change="selectDateRange" placeholder="选择起始时间"
-                                            style="width: 200px"></DatePicker>
-                              </Form-item>
-                            </span>
+                <Form-item label="用户类型" prop="type">
+                  <Select v-model="searchForm.type" placeholder="请选择" clearable style="width: 200px">
+                    <Option value="0">普通用户</Option>
+                    <Option value="1">管理员</Option>
+                  </Select>
+                </Form-item>
+                <Form-item label="用户状态" prop="status">
+                  <Select v-model="searchForm.status" placeholder="请选择" clearable style="width: 200px">
+                    <Option value="0">正常</Option>
+                    <Option value="-1">禁用</Option>
+                  </Select>
+                </Form-item>
+                <Form-item label="创建时间">
+                  <DatePicker v-model="selectDate" type="daterange" format="yyyy-MM-dd" clearable
+                              @on-change="selectDateRange" placeholder="选择起始时间"
+                              style="width: 200px"></DatePicker>
+                </Form-item>
+              </span>
               <Form-item style="margin-left:-35px;" class="br">
                 <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
                 <Button @click="handleReset">重置</Button>
@@ -52,18 +43,18 @@
           <Row class="operation">
             <Button @click="add" type="primary" icon="md-add">添加用户</Button>
             <Button @click="delAll" icon="md-trash">批量删除</Button>
-            <Dropdown @on-click="handleDropdown">
-              <Button>
-                更多操作
-                <Icon type="md-arrow-dropdown"/>
-              </Button>
-              <DropdownMenu slot="list">
-                <DropdownItem name="refresh">刷新</DropdownItem>
-                <DropdownItem name="exportData">导出所选数据</DropdownItem>
-                <DropdownItem name="exportAll">导出全部数据</DropdownItem>
-                <!--<DropdownItem name="importData">导入数据(付费)</DropdownItem>-->
-              </DropdownMenu>
-            </Dropdown>
+            <!--<Dropdown @on-click="handleDropdown">-->
+              <!--<Button>-->
+                <!--更多操作-->
+                <!--<Icon type="md-arrow-dropdown"/>-->
+              <!--</Button>-->
+              <!--<DropdownMenu slot="list">-->
+                <!--<DropdownItem name="refresh">刷新</DropdownItem>-->
+                <!--<DropdownItem name="exportData">导出所选数据</DropdownItem>-->
+                <!--<DropdownItem name="exportAll">导出全部数据</DropdownItem>-->
+                <!--&lt;!&ndash;<DropdownItem name="importData">导入数据(付费)</DropdownItem>&ndash;&gt;-->
+              <!--</DropdownMenu>-->
+            <!--</Dropdown>-->
             <circleLoading v-if="operationLoading"/>
           </Row>
           <Row>
@@ -78,7 +69,7 @@
             <Table :columns="exportColumns" :data="exportData" ref="exportTable" style="display:none"></Table>
           </Row>
           <Row type="flex" justify="end" class="page">
-            <Page :current="searchForm.pageNumber" :total="total" :page-size="searchForm.pageSize"
+            <Page :current="searchForm.page" :total="total" :page-size="searchForm.size"
                   @on-change="changePage" @on-page-size-change="changePageSize" :page-size-opts="[10,20,50]"
                   size="small" show-total show-elevator show-sizer></Page>
           </Row>
@@ -96,43 +87,6 @@
         <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
           <Input type="password" v-model="userForm.password" autocomplete="off"/>
         </FormItem>
-        <!--<FormItem label="手机号" prop="mobile">-->
-        <!--<Input v-model="userForm.mobile"/>-->
-        <!--</FormItem>-->
-        <Form-item label="头像" prop="avatar">
-          <Poptip trigger="hover" title="图片预览" placement="right" width="350">
-            <Input v-model="userForm.avatar" placeholder="可直接填入网络图片链接" clearable/>
-            <div slot="content">
-              <img :src="userForm.avatar" alt="无效的图片链接" style="width: 100%;margin: 0 auto;display: block;">
-              <a @click="viewPic()" style="margin-top:5px;text-align:right;display:block">查看原图</a>
-            </div>
-          </Poptip>
-          <Upload action="/console/admin/user/uploadFile"
-                  :headers="accessToken"
-                  :on-success="handleSuccess"
-                  :on-error="handleError"
-                  :format="['jpg','jpeg','png','gif']"
-                  :max-size="5120"
-                  :on-format-error="handleFormatError"
-                  :on-exceeded-size="handleMaxSize"
-                  :before-upload="beforeUpload"
-                  ref="up"
-                  class="upload">
-            <Button icon="ios-cloud-upload-outline">上传图片</Button>
-          </Upload>
-        </Form-item>
-        <!--<Form-item label="所属部门" prop="departmentTitle">-->
-        <!--<Poptip trigger="click" placement="right" title="选择部门" width="250">-->
-        <!--<div style="display:flex;">-->
-        <!--<Input v-model="userForm.departmentTitle" readonly style="margin-right:10px;"/>-->
-        <!--<Button icon="md-trash" @click="clearSelectDep">清空已选</Button>-->
-        <!--</div>-->
-        <!--<div slot="content">-->
-        <!--<Tree :data="dataDep" :load-data="loadDataTree" @on-select-change="selectTree"></Tree>-->
-        <!--<Spin size="large" fix v-if="loading"></Spin>-->
-        <!--</div>-->
-        <!--</Poptip>-->
-        <!--</Form-item>-->
         <FormItem label="用户类型" prop="type">
           <Select v-model="userForm.type" placeholder="请选择">
             <Option :value="0">普通用户</Option>
@@ -224,15 +178,12 @@
         // selectDep: [],
         // dataDep: [],
         searchForm: {
-          username: '',
+          username: null,
           departmentId: '',
-          mobile: '',
-          email: '',
-          sex: '',
-          type: '',
-          status: '',
-          pageNumber: 1,
-          pageSize: 10,
+          type: null,
+          status: null,
+          page: 1,
+          size: 10,
           sort: 'createTime',
           order: 'desc',
           startDate: '',
@@ -245,6 +196,7 @@
         userForm: {
           // sex: 1,
           type: 0,
+          status: 0,
           nickName: '',
           avatar: 'https://s1.ax1x.com/2018/05/19/CcdVQP.png',
           roles: [],
@@ -272,33 +224,28 @@
             type: 'selection',
             width: 60,
             align: 'center',
-            fixed: 'left'
           },
           {
             type: 'index',
             width: 60,
             align: 'center',
-            fixed: 'left'
           },
           {
             title: '用户名',
             key: 'username',
-            width: 200,
+            width: 120,
             sortable: true,
-            fixed: 'left'
           },
           {
             title: '昵称',
             key: 'nickName',
-            width: 200,
-            fixed: 'left'
+            width: 120,
           },
           {
             title: '头像',
             key: 'avatar',
-            width: 200,
+            width: 120,
             align: 'center',
-            fixed: 'left',
             render: (h, params) => {
               return h('Avatar', {
                 props: {
@@ -307,34 +254,6 @@
               })
             }
           },
-          // {
-          //   title: "手机",
-          //   key: "mobile",
-          //   width: 250,
-          //   sortable: true,
-          //   render: (h, params) => {
-          //     if (this.getStore("roles").includes("ROLE_ADMIN")) {
-          //       return h("span", params.row.mobile);
-          //     } else {
-          //       return h("span", "您无权查看该数据");
-          //     }
-          //   }
-          // },
-          // {
-          //   title: '用户类型',
-          //   key: 'type',
-          //   align: 'center',
-          //   width: 180,
-          //   render: (h, params) => {
-          //     let re = ''
-          //     if (params.row.type === 1) {
-          //       re = '管理员'
-          //     } else if (params.row.type === 0) {
-          //       re = '普通用户'
-          //     }
-          //     return h('div', re)
-          //   }
-          // },
           {
             title: '用户角色',
             key: 'roles',
@@ -416,7 +335,6 @@
             key: 'action',
             // width: 250,
             align: 'center',
-            fixed: 'right',
             render: (h, params) => {
               if (params.row.status === 0) {
                 return h('div', [
@@ -593,128 +511,13 @@
         this.getUserList()
         // this.initDepartmentTreeData();
       },
-      // initDepartmentData() {
-      //   initDepartment().then(res => {
-      //     if (res.success === true) {
-      //       res.result.forEach(function (e) {
-      //         if (e.isParent) {
-      //           e.value = e.id;
-      //           e.label = e.title;
-      //           e.loading = false;
-      //           e.children = [];
-      //         } else {
-      //           e.value = e.id;
-      //           e.label = e.title;
-      //         }
-      //         if (e.status === -1) {
-      //           e.label = "[已禁用] " + e.label;
-      //           e.disabled = true;
-      //         }
-      //       });
-      //       this.department = res.result;
-      //     }
-      //   });
-      // },
-      // initDepartmentTreeData() {
-      //   initDepartment().then(res => {
-      //     if (res.success === true) {
-      //       res.result.forEach(function (e) {
-      //         if (e.isParent) {
-      //           e.loading = false;
-      //           e.children = [];
-      //         }
-      //         if (e.status === -1) {
-      //           e.title = "[已禁用] " + e.title;
-      //           e.disabled = true;
-      //         }
-      //       });
-      //       this.dataDep = res.result;
-      //     }
-      //   });
-      // },
-      // loadData(item, callback) {
-      //   item.loading = true;
-      // loadDepartment(item.value).then(res => {
-      //   item.loading = false;
-      //   if (res.success === true) {
-      //     res.result.forEach(function (e) {
-      //       if (e.isParent) {
-      //         e.value = e.id;
-      //         e.label = e.title;
-      //         e.loading = false;
-      //         e.children = [];
-      //       } else {
-      //         e.value = e.id;
-      //         e.label = e.title;
-      //       }
-      //       if (e.status === -1) {
-      //         e.label = "[已禁用] " + e.label;
-      //         e.disabled = true;
-      //       }
-      //     });
-      //     item.children = res.result;
-      //     callback();
-      //   }
-      // });
-      // },
-      // loadDataTree(item, callback) {
-      //   loadDepartment(item.id).then(res => {
-      //     if (res.success === true) {
-      //       res.result.forEach(function (e) {
-      //         if (e.isParent) {
-      //           e.loading = false;
-      //           e.children = [];
-      //         }
-      //         if (e.status === -1) {
-      //           e.title = "[已禁用] " + e.title;
-      //           e.disabled = true;
-      //         }
-      //       });
-      //       callback(res.result);
-      //     }
-      //   });
-      // },
-      // selectTree(v) {
-      //   if (v.length > 0) {
-      //     // 转换null为""
-      //     for (let attr in v[0]) {
-      //       if (v[0][attr] === null) {
-      //         v[0][attr] = "";
-      //       }
-      //     }
-      //     let str = JSON.stringify(v[0]);
-      //     let data = JSON.parse(str);
-      //     this.userForm.departmentId = data.id;
-      //     this.userForm.departmentTitle = data.title;
-      //   }
-      // },
-      // clearSelectDep() {
-      //   this.userForm.departmentId = "";
-      //   this.userForm.departmentTitle = "";
-      // },
-      // handleChangeDep(value, selectedData) {
-      //   // 获取最后一个值
-      //   if (value && value.length > 0) {
-      //     this.searchForm.departmentId = value[value.length - 1];
-      //   } else {
-      //     this.searchForm.departmentId = "";
-      //   }
-      // },
-      // handleChangeUserFormDep(value, selectedData) {
-      //   // 获取最后一个值
-      //   if (value && value.length > 0) {
-      //     this.userForm.departmentId = value[value.length - 1];
-      //   } else {
-      //     this.userForm.departmentId = "";
-      //   }
-      // },
       changePage (v) {
-        this.searchForm.pageNumber = v
+        this.searchForm.page = v
         this.getUserList()
         this.clearSelectAll()
       },
       changePageSize (v) {
-        this.searchForm.pageSize = v
+        this.searchForm.size = v
         this.getUserList()
       },
       selectDateRange (v) {
@@ -726,12 +529,14 @@
       getUserList () {
         // 多条件搜索用户列表
         this.loading = true
-        getUserListData(this.searchForm).then(res => {
+        const params = {...this.searchForm};
+        params.page--;
+        getUserListData(params).then(data => {
           this.loading = false
-          if (res.success === true) {
-            this.data = res.result.content
-            this.total = res.result.totalElements
-          }
+          this.data = data.content
+          this.total = data.totalElements
+        }).catch(data => {
+          this.loading = false;
         })
       },
       handleSearch () {
@@ -761,11 +566,9 @@
       },
       getAllRoleList () {
         let self = this
-        getAllRoleList().then(res => {
-          if (res.success === true) {
-            self.roleList = res.result
-          }
-        })
+        getAllRoleList().then(data => {
+          self.roleList = data
+        }).catch(data => {})
       },
       handleDropdown (name) {
         if (name === 'refresh') {
@@ -810,7 +613,8 @@
             if (this.modalType === 0) {
               // 添加用户 避免编辑后传入id
               delete this.userForm.id
-              delete this.userForm.status
+              delete this.userForm.avatar
+              delete this.userForm.permissions
               if (
                 this.userForm.password == '' ||
                 this.userForm.password == undefined
@@ -822,31 +626,37 @@
                 this.errorPass = '密码长度不得少于6位'
                 return
               }
+              const params = JSON.parse(JSON.stringify(this.userForm));
+              params.roles = params.roles.map(item => {
+                return {id: item}
+              });
               this.submitLoading = true
-              addUser(this.userForm).then(res => {
+              addUser(params).then(res => {
                 this.submitLoading = false
-                if (res.success === true) {
-                  this.$Message.success('操作成功')
-                  this.getUserList()
-                  this.userModalVisible = false
-                }
+                this.$Message.success('操作成功')
+                this.getUserList()
+                this.userModalVisible = false
+              }).catch(data => {
+                this.submitLoading = false
               })
             } else {
               // 编辑
               this.submitLoading = true
-              let params = this.userForm
-              delete params.updateTime
+              const params = JSON.parse(JSON.stringify(this.userForm));
+              console.log(params.roles)
+              params.roles = params.roles.map(item => {
+                return {id: item}
+              });
               delete params.createTime
-              // delete params.roles
               delete params.permissions
               delete params.other
               editUser(params).then(res => {
                 this.submitLoading = false
-                if (res.success === true) {
-                  this.$Message.success('操作成功')
-                  this.getUserList()
-                  this.userModalVisible = false
-                }
+                this.$Message.success('操作成功')
+                this.getUserList()
+                this.userModalVisible = false
+              }).catch(data => {
+                this.submitLoading = false
               })
             }
           }
@@ -909,7 +719,7 @@
         let userInfo = JSON.parse(str)
         this.userForm = userInfo
         let selectRolesId = []
-        const roles = this.userForm.roles || [];console.log(roles)
+        const roles = this.userForm.roles || [];
         roles.forEach(function (e) {
           selectRolesId.push(e.id)
         })
@@ -924,10 +734,8 @@
             this.operationLoading = true
             enableUser(v.id).then(res => {
               this.operationLoading = false
-              if (res.success === true) {
-                this.$Message.success('操作成功')
-                this.getUserList()
-              }
+              this.$Message.success('操作成功')
+              this.getUserList()
             })
           }
         })
@@ -938,12 +746,12 @@
           content: '您确认要禁用用户 ' + v.nickName + ' ?',
           onOk: () => {
             this.operationLoading = true
-            disableUser(v.id).then(res => {
+            disableUser(v.id).then(data => {
               this.operationLoading = false
-              if (res.success === true) {
-                this.$Message.success('操作成功')
-                this.getUserList()
-              }
+              this.$Message.success('操作成功')
+              this.getUserList()
+            }).catch(data => {
+              this.operationLoading = false
             })
           }
         })
@@ -954,12 +762,12 @@
           content: '您确认要删除用户 ' + v.nickName + ' ?',
           onOk: () => {
             this.operationLoading = true
-            deleteUser(v.id).then(res => {
+            deleteUser(v.id).then(data => {
               this.operationLoading = false
-              if (res.success === true) {
-                this.$Message.success('删除成功')
-                this.getUserList()
-              }
+              this.$Message.success('删除成功')
+              this.getUserList()
+            }).catch(data => {
+              this.operationLoading = false
             })
           }
         })

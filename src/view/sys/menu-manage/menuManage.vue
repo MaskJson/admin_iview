@@ -251,37 +251,37 @@
       },
       getAllList () {
         this.loading = true
-        getAllPermissionList().then(res => {
+        getAllPermissionList().then(data => {
           this.loading = false
-          if (res.success === true) {
-            // 仅展开指定级数 默认所有展开
-            let expandLevel = this.expandLevel
-            res.result.forEach(function (e) {
-              if (expandLevel === 1) {
-                if (e.level === 1) {
-                  e.expand = false
-                }
-                if (e.children && e.children.length > 0) {
-                  e.children.forEach(function (c) {
+          // 仅展开指定级数 默认所有展开
+          let expandLevel = this.expandLevel
+          data.forEach(function (e) {
+            if (expandLevel === 1) {
+              if (e.level === 1) {
+                e.expand = false
+              }
+              if (e.children && e.children.length > 0) {
+                e.children.forEach(function (c) {
+                  if (c.level === 2) {
+                    c.expand = false
+                  }
+                })
+              }
+            } else {
+              if (e.children && e.children.length > 0) {
+                e.children.forEach(function (c) {
+                  if (expandLevel === 2) {
                     if (c.level === 2) {
                       c.expand = false
                     }
-                  })
-                }
-              } else {
-                if (e.children && e.children.length > 0) {
-                  e.children.forEach(function (c) {
-                    if (expandLevel === 2) {
-                      if (c.level === 2) {
-                        c.expand = false
-                      }
-                    }
-                  })
-                }
+                  }
+                })
               }
-            })
-            this.data = res.result
-          }
+            }
+          })
+          this.data = data
+        }).catch(data => {
+          this.loading = false
         })
       },
       selectTree (v) {
@@ -351,19 +351,18 @@
               this.menuForm.icon = ''
               this.menuForm.component = ''
             }
-            let params = this.menuForm;
+            let params = {...this.menuForm};
             delete params.updateTime;
             delete params.createTime;
             delete params.children;
             delete params.other;
-            editPermission(this.menuForm).then(res => {
+            delete params.permTypes;
+            addPermission(params).then(data => {
               this.submitLoading = false
-              if (res.success === true) {
-                this.$Message.success('编辑成功')
-                this.init()
-                this.menuModalVisible = false
-              }
-            })
+              this.$Message.success('编辑成功')
+              this.init()
+              this.menuModalVisible = false
+            }).catch(data => {})
           }
         })
       },
@@ -389,14 +388,12 @@
               this.menuFormAdd.icon = ''
               this.menuFormAdd.component = ''
             }
-            addPermission(this.menuFormAdd).then(res => {
+            addPermission(this.menuFormAdd).then(data => {
               this.submitLoading = false
-              if (res.success === true) {
-                this.$Message.success('添加成功')
-                this.init()
-                this.menuModalVisible = false
-              }
-            })
+              this.$Message.success('添加成功')
+              this.init()
+              this.menuModalVisible = false
+            }).catch(data => {})
           }
         })
       },
@@ -469,15 +466,13 @@
               ids += e.id + ','
             })
             ids = ids.substring(0, ids.length - 1)
-            deletePermission(ids).then(res => {
-              if (res.success === true) {
-                this.$Message.success('删除成功')
-                this.selectList = []
-                this.selectCount = 0
-                this.canelEdit()
-                this.init()
-              }
-            })
+            deletePermission(ids).then(data => {
+              this.$Message.success('删除成功')
+              this.selectList = []
+              this.selectCount = 0
+              this.canelEdit()
+              this.init()
+            }).catch(data => {})
           }
         })
       }

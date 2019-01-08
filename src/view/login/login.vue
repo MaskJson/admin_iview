@@ -17,6 +17,7 @@
 </template>
 
 <script>
+  import md5 from 'js-md5'
   import LoginForm from '_c/login-form'
   import {getJWT, getUserInfo, login} from "@/api/index";
   import Cookies from "js-cookie"
@@ -48,7 +49,7 @@
       handleSubmit({userName, password}) {
         login({
           username: userName,
-          password: password
+          password: md5(password)
         }).then(data => {
           this.setStore("accessToken", data.token);
           // 保存7天

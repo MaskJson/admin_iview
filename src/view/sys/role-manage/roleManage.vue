@@ -103,8 +103,9 @@
             align: 'center'
           },
           {
-            type: 'index',
+            title: 'id',
             // width: 60,
+            key: 'id',
             align: 'center'
           },
           {
@@ -245,22 +246,22 @@
           sort: this.sortColumn,
           order: this.sort
         }
-        getRoleByPage(params).then(res => {
+        getRoleByPage(params).then(data => {
           this.loading = false
-          if (res.success === true) {
-            this.data = res.result.content
-            this.total = res.result.totalElements
-          }
+          this.data = data.content
+          this.total = data.totalElements
+        }).catch(data => {
+          this.loading = false
         })
       },
       getPermList () {
         this.treeLoading = true
-        getAllPermissionList().then(res => {
+        getAllPermissionList().then(data => {
           this.treeLoading = false
-          if (res.success === true) {
-            this.deleteDisableNode(res.result)
-            this.permData = res.result
-          }
+          this.deleteDisableNode(data)
+          this.permData = data
+        }).catch(data => {
+          this.treeLoading = false
         })
       },
       // 递归标记禁用节点
@@ -282,28 +283,24 @@
       submitRole () {
         this.$refs.roleForm.validate(valid => {
           if (valid) {
-            if (this.modalType === 0) {
-              // 添加
-              this.submitLoading = true
-              addRole(this.roleForm).then(res => {
-                this.submitLoading = false
-                if (res.success === true) {
-                  this.$Message.success('操作成功')
-                  this.getRoleList()
-                  this.roleModalVisible = false
-                }
-              })
-            } else {
-              this.submitLoading = true
-              editRole(this.roleForm).then(res => {
-                this.submitLoading = false
-                if (res.success === true) {
-                  this.$Message.success('操作成功')
-                  this.getRoleList()
-                  this.roleModalVisible = false
-                }
-              })
+            let handler;
+            handler = this.modalType === 0 ? addRole : editRole;
+            const params = {
+              roleName: this.roleForm.roleName,
+              description: this.roleForm.description
             }
+            if (this.modalType !==0) {
+              params.id = this.roleForm.id;
+            }
+            this.submitLoading = true;
+            handler(params).then(data => {
+              this.submitLoading = false;
+              this.$Message.success('操作成功')
+              this.getRoleList()
+              this.roleModalVisible = false
+            }).catch(data => {
+              this.submitLoading = false;
+            })
           }
         })
       },
@@ -334,12 +331,12 @@
           content: '您确认要删除角色 ' + v.roleName + ' ?',
           onOk: () => {
             this.operationLoading = true
-            deleteRole(v.id).then(res => {
+            deleteRole(v.id).then(data => {
               this.operationLoading = false
-              if (res.success === true) {
-                this.$Message.success('删除成功')
-                this.getRoleList()
-              }
+              this.$Message.success('删除成功')
+              this.getRoleList()
+            }).catch(data => {
+              this.operationLoading = false
             })
           }
         })
@@ -368,11 +365,11 @@
             this.operationLoading = true
             deleteRole(ids).then(res => {
               this.operationLoading = false
-              if (res.success === true) {
-                this.$Message.success('删除成功')
-                this.clearSelectAll()
-                this.getRoleList()
-              }
+              this.$Message.success('删除成功')
+              this.clearSelectAll()
+              this.getRoleList()
+            }).catch(data => {
+              this.operationLoading = false
             })
           }
         })
@@ -434,21 +431,21 @@
       },
       submitPermEdit () {
         this.submitPermLoading = true
-        let permIds = ''
+        let permIds = []
         let selectedNodes = this.$refs.tree.getSelectedNodes()
         selectedNodes.forEach(function (e) {
-          permIds += e.id + ','
+          permIds.push(e.id)
         })
-        permIds = permIds.substring(0, permIds.length - 1)
-        editRolePerm(this.editRolePermId, {
-          permIds: permIds
-        }).then(res => {
+        editRolePerm({
+          roleId: this.editRolePermId,
+          permIds: permIds.join(',')
+        }).then(data => {
           this.submitPermLoading = false
-          if (res.success === true) {
-            this.$Message.success('操作成功')
-            this.getRoleList()
-            this.permModalVisible = false
-          }
+          this.$Message.success('操作成功')
+          this.getRoleList()
+          this.permModalVisible = false
+        }).catch(data => {
+          this.submitPermLoading = false
         })
       },
       cancelPermEdit () {
