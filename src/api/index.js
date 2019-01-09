@@ -14,15 +14,6 @@ export const getAllUserData = (params) => {
   return getRequest('/user/getAll', params)
 }
 
-// 启用用户
-export const enableUser = (id, params) => {
-  return postRequest(`/user/sys/enable/${id}`, params)
-}
-// 禁用用户
-export const disableUser = (id, params) => {
-  return postRequest(`/user/sys/disable/${id}`, params)
-}
-
 
 /********************************系统api**********************************/
 // 获取登录用户权限菜单
@@ -46,8 +37,14 @@ export const addUser = (params) => {
 export const editUser = (params) => {
   return postJson('/sys/user/edit', params)
 }
-
-
+// 启用-禁用用户
+export const enableUser = (params) => {
+  return postRequest('/sys/user/editStatus', params);
+}
+// 删除用户
+export const deleteUser = (ids, params) => {
+  return deleteRequest(`/sys/user/delByIds/${ids}`, params)
+}
 // 获取全部角色数据
 export const getAllRoleList = (params) => {
   return getRequest('/sys/role/getAllList', params)
@@ -63,10 +60,6 @@ export const addRole = (params) => {
 // 编辑角色
 export const editRole = (params) => {
   return postJson('/sys/role/edit', params)
-}
-// 删除用户
-export const deleteUser = (ids, params) => {
-  return deleteRequest(`/sys/role/delByIds/${ids}`, params)
 }
 // 分配角色权限
 export const editRolePerm = (params) => {

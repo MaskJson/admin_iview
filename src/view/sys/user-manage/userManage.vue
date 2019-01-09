@@ -12,7 +12,6 @@
                 <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px"/>
               </Form-item>
 
-              <span v-if="drop">
                 <Form-item label="用户类型" prop="type">
                   <Select v-model="searchForm.type" placeholder="请选择" clearable style="width: 200px">
                     <Option value="0">普通用户</Option>
@@ -27,34 +26,16 @@
                 </Form-item>
                 <Form-item label="创建时间">
                   <DatePicker v-model="selectDate" type="daterange" format="yyyy-MM-dd" clearable
-                              @on-change="selectDateRange" placeholder="选择起始时间"
-                              style="width: 200px"></DatePicker>
+                    @on-change="selectDateRange" placeholder="选择起始时间"
+                    style="width: 200px"></DatePicker>
                 </Form-item>
-              </span>
-              <Form-item style="margin-left:-35px;" class="br">
-                <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
-                <Button @click="handleReset">重置</Button>
-                <a class="drop-down" @click="dropDown">{{dropDownContent}}
-                  <Icon :type="dropDownIcon"></Icon>
-                </a>
-              </Form-item>
+              <Button @click="handleSearch" type="primary" icon="ios-search" class="mr-10">搜索</Button>
+              <Button @click="handleReset">重置</Button>
             </Form>
           </Row>
           <Row class="operation">
             <Button @click="add" type="primary" icon="md-add">添加用户</Button>
             <Button @click="delAll" icon="md-trash">批量删除</Button>
-            <!--<Dropdown @on-click="handleDropdown">-->
-              <!--<Button>-->
-                <!--更多操作-->
-                <!--<Icon type="md-arrow-dropdown"/>-->
-              <!--</Button>-->
-              <!--<DropdownMenu slot="list">-->
-                <!--<DropdownItem name="refresh">刷新</DropdownItem>-->
-                <!--<DropdownItem name="exportData">导出所选数据</DropdownItem>-->
-                <!--<DropdownItem name="exportAll">导出全部数据</DropdownItem>-->
-                <!--&lt;!&ndash;<DropdownItem name="importData">导入数据(付费)</DropdownItem>&ndash;&gt;-->
-              <!--</DropdownMenu>-->
-            <!--</Dropdown>-->
             <circleLoading v-if="operationLoading"/>
           </Row>
           <Row>
@@ -115,13 +96,6 @@
         <Button @click="viewImage=false">关闭</Button>
       </div>
     </Modal>
-    <Modal
-      v-model="modalExportAll"
-      title="确认导出"
-      :loading="loadingExport"
-      @on-ok="exportAll">
-      <p>您确认要导出全部 {{total}} 条数据？</p>
-    </Modal>
   </div>
 </template>
 
@@ -154,14 +128,6 @@
           callback()
         }
       }
-      // const validateMobile = (rule, value, callback) => {
-      //   var reg = /^[1][3,4,5,7,8][0-9]{9}$/;
-      //   if (!reg.test(value)) {
-      //     callback(new Error("手机号格式错误"));
-      //   } else {
-      //     callback();
-      //   }
-      // };
       return {
         accessToken: {},
         loading: true,
@@ -171,7 +137,6 @@
         drop: false,
         dropDownContent: '展开',
         dropDownIcon: 'ios-arrow-down',
-        selectCount: 0,
         selectList: [],
         viewImage: false,
         // department: [],
@@ -279,6 +244,11 @@
                       props: {
                         type: 'dot',
                         color: 'success'
+                      },
+                      on: {
+                        click: () => {
+
+                        }
                       }
                     },
                     '正常启用'
@@ -336,170 +306,70 @@
             // width: 250,
             align: 'center',
             render: (h, params) => {
-              if (params.row.status === 0) {
-                return h('div', [
-                  h(
-                    'Button',
-                    {
-                      props: {
-                        type: 'primary',
-                        size: 'small'
-                      },
-                      style: {
-                        marginRight: '5px'
-                      },
-                      on: {
-                        click: () => {
-                          this.edit(params.row)
-                        }
-                      }
+              const children = [
+                h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
                     },
-                    '编辑'
-                  ),
-                  h(
-                    'Button',
-                    {
-                      props: {
-                        size: 'small'
-                      },
-                      style: {
-                        marginRight: '5px'
-                      },
-                      on: {
-                        click: () => {
-                          this.disable(params.row)
-                        }
-                      }
+                    style: {
+                      marginRight: '5px'
                     },
-                    '禁用'
-                  ),
-                  h(
-                    'Button',
-                    {
-                      props: {
-                        type: 'error',
-                        size: 'small'
-                      },
-                      on: {
-                        click: () => {
-                          this.remove(params.row)
-                        }
+                    on: {
+                      click: () => {
+                        this.edit(params.row)
                       }
+                    }
+                  },
+                  '编辑'
+                ),
+                h(
+                  'Button',
+                  {
+                    props: {
+                      size: 'small'
                     },
-                    '删除'
-                  )
-                ])
-              } else {
-                return h('div', [
-                  h(
-                    'Button',
-                    {
-                      props: {
-                        type: 'primary',
-                        size: 'small'
-                      },
-                      style: {
-                        marginRight: '5px'
-                      },
-                      on: {
-                        click: () => {
-                          this.edit(params.row)
-                        }
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.enable(params.row.id, params.row.status == 0 ? -1 : 0, params.row.nickName)
                       }
+                    }
+                  },
+                  params.row.status == 0 ? '禁用' : '启用'
+                ),
+                h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'error',
+                      size: 'small'
                     },
-                    '编辑'
-                  ),
-                  h(
-                    'Button',
-                    {
-                      props: {
-                        type: 'success',
-                        size: 'small'
-                      },
-                      style: {
-                        marginRight: '5px'
-                      },
-                      on: {
-                        click: () => {
-                          this.enable(params.row)
-                        }
+                    on: {
+                      click: () => {
+                        this.remove([params.row.id])
                       }
-                    },
-                    '启用'
-                  ),
-                  h(
-                    'Button',
-                    {
-                      props: {
-                        type: 'error',
-                        size: 'small'
-                      },
-                      on: {
-                        click: () => {
-                          this.remove(params.row)
-                        }
-                      }
-                    },
-                    '删除'
-                  )
-                ])
-              }
+                    }
+                  },
+                  '删除'
+                )
+              ]
+              return h('div', children)
             }
-          }
-        ],
-        exportColumns: [
-          {
-            title: '用户名',
-            key: 'username'
-          },
-          {
-            title: '头像',
-            key: 'avatar'
-          },
-          // {
-          //   title: "所属部门ID",
-          //   key: "departmentId"
-          // },
-          // {
-          //   title: "所属部门",
-          //   key: "departmentTitle"
-          // },
-          // {
-          //   title: "手机",
-          //   key: "mobile"
-          // },
-          // {
-          //   title: "邮箱",
-          //   key: "email"
-          // },
-          // {
-          //   title: "性别",
-          //   key: "sex"
-          // },
-          {
-            title: '用户类型',
-            key: 'type'
-          },
-          {
-            title: '状态',
-            key: 'status'
-          },
-          // {
-          //   title: "删除标志",
-          //   key: "delFlag"
-          // },
-          {
-            title: '创建时间',
-            key: 'createTime'
-          },
-          {
-            title: '更新时间',
-            key: 'updateTime'
           }
         ],
         data: [],
         exportData: [],
         total: 0
+      }
+    },
+    computed: {
+      selectCount() {
+        return this.selectList.length;
       }
     },
     methods: {
@@ -569,40 +439,6 @@
         getAllRoleList().then(data => {
           self.roleList = data
         }).catch(data => {})
-      },
-      handleDropdown (name) {
-        if (name === 'refresh') {
-          this.getUserList()
-        } else if (name === 'exportData') {
-          if (this.selectCount <= 0) {
-            this.$Message.warning('您还未选择要导出的数据')
-            return
-          }
-          this.$Modal.confirm({
-            title: '确认导出',
-            content: '您确认要导出所选 ' + this.selectCount + ' 条数据?',
-            onOk: () => {
-              this.$refs.exportTable.exportCsv({
-                filename: '用户数据'
-              })
-            }
-          })
-        } else if (name === 'exportAll') {
-          this.modalExportAll = true
-        }
-      },
-      exportAll () {
-        getAllUserData().then(res => {
-          this.modalExportAll = false
-          if (res.success) {
-            this.exportData = res.result
-            setTimeout(() => {
-              this.$refs.exportTable.exportCsv({
-                filename: '用户全部数据'
-              })
-            }, 1000)
-          }
-        })
       },
       cancelUser () {
         this.userModalVisible = false
@@ -726,27 +562,16 @@
         this.userForm.roles = selectRolesId
         this.userModalVisible = true
       },
-      enable (v) {
+      enable (id, status, nickName) {
         this.$Modal.confirm({
-          title: '确认启用',
-          content: '您确认要启用用户 ' + v.nickName + ' ?',
+          title: `确认${status == 0 ? '启用' : '禁用'}`,
+          content: `您确认要${status == 0 ? '启用' : '禁用'}用户 ` + nickName + ' ?',
           onOk: () => {
             this.operationLoading = true
-            enableUser(v.id).then(res => {
-              this.operationLoading = false
-              this.$Message.success('操作成功')
-              this.getUserList()
-            })
-          }
-        })
-      },
-      disable (v) {
-        this.$Modal.confirm({
-          title: '确认禁用',
-          content: '您确认要禁用用户 ' + v.nickName + ' ?',
-          onOk: () => {
-            this.operationLoading = true
-            disableUser(v.id).then(data => {
+            enableUser({
+              id: id,
+              status: status
+            }).then(data => {
               this.operationLoading = false
               this.$Message.success('操作成功')
               this.getUserList()
@@ -756,13 +581,13 @@
           }
         })
       },
-      remove (v) {
+      remove (ids) {
         this.$Modal.confirm({
           title: '确认删除',
-          content: '您确认要删除用户 ' + v.nickName + ' ?',
+          content: '您确认要删除用户吗？',
           onOk: () => {
             this.operationLoading = true
-            deleteUser(v.id).then(data => {
+            deleteUser(ids).then(data => {
               this.operationLoading = false
               this.$Message.success('删除成功')
               this.getUserList()
@@ -771,16 +596,6 @@
             })
           }
         })
-      },
-      dropDown () {
-        if (this.drop) {
-          this.dropDownContent = '展开'
-          this.dropDownIcon = 'ios-arrow-down'
-        } else {
-          this.dropDownContent = '收起'
-          this.dropDownIcon = 'ios-arrow-up'
-        }
-        this.drop = !this.drop
       },
       showSelect (e) {
         this.exportData = e
@@ -795,26 +610,7 @@
           this.$Message.warning('您还未选择要删除的数据')
           return
         }
-        this.$Modal.confirm({
-          title: '确认删除',
-          content: '您确认要删除所选的 ' + this.selectCount + ' 条数据?',
-          onOk: () => {
-            let ids = ''
-            this.selectList.forEach(function (e) {
-              ids += e.id + ','
-            })
-            ids = ids.substring(0, ids.length - 1)
-            this.operationLoading = true
-            deleteUser(ids).then(res => {
-              this.operationLoading = false
-              if (res.success === true) {
-                this.$Message.success('删除成功')
-                this.clearSelectAll()
-                this.getUserList()
-              }
-            })
-          }
-        })
+        this.remove(this.selectList.map(item => item.id));
       }
     },
     mounted () {
