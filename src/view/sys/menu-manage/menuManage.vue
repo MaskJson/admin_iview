@@ -237,33 +237,33 @@
       },
       handleDropdown (name) {
         if (name === 'expandOne') {
-          this.expandLevel = 1
+          this.expandLevel = 1;
           this.getAllList()
         } else if (name === 'expandTwo') {
-          this.expandLevel = 2
+          this.expandLevel = 2;
           this.getAllList()
         } else if (name === 'expandAll') {
-          this.expandLevel = 3
+          this.expandLevel = 3;
           this.getAllList()
         } else if (name === 'refresh') {
           this.getAllList()
         }
       },
       getAllList () {
-        this.loading = true
+        this.loading = true;
         getAllPermissionList().then(data => {
-          this.loading = false
+          this.loading = false;
           // 仅展开指定级数 默认所有展开
-          let expandLevel = this.expandLevel
+          let expandLevel = this.expandLevel;
           data.forEach(function (e) {
             if (expandLevel === 1) {
               if (e.level === 1) {
-                e.expand = false
+                e.expand = false;
               }
               if (e.children && e.children.length > 0) {
                 e.children.forEach(function (c) {
                   if (c.level === 2) {
-                    c.expand = false
+                    c.expand = false;
                   }
                 })
               }
@@ -272,13 +272,13 @@
                 e.children.forEach(function (c) {
                   if (expandLevel === 2) {
                     if (c.level === 2) {
-                      c.expand = false
+                      c.expand = false;
                     }
                   }
                 })
               }
             }
-          })
+          });
           this.data = data
         }).catch(data => {
           this.loading = false
@@ -287,69 +287,69 @@
       selectTree (v) {
         if (v.length > 0) {
           if (Number(v[0].level) === 1 || Number(v[0].level) === 2) {
-            this.isButton = false
-            this.isMenu = true
+            this.isButton = false;
+            this.isMenu = true;
           } else {
-            this.isButton = true
-            this.isMenu = false
+            this.isButton = true;
+            this.isMenu = false;
           }
           if (Number(v[0].status) === 0) {
-            this.editStatus = true
+            this.editStatus = true;
           } else {
-            this.editStatus = false
+            this.editStatus = false;
           }
           // 转换null为""
           for (let attr in v[0]) {
             if (v[0][attr] === null) {
-              v[0][attr] = ''
+              v[0][attr] = '';
             }
           }
-          let str = JSON.stringify(v[0])
-          let menu = JSON.parse(str)
-          this.menuForm = menu
-          this.editTitle = menu.title
+          let str = JSON.stringify(v[0]);
+          let menu = JSON.parse(str);
+          this.menuForm = menu;
+          this.editTitle = menu.title;
         }
       },
       canelEdit () {
-        this.isMenu = false
-        this.isButton = false
-        this.$refs.menuForm.resetFields()
-        delete this.menuForm.id
-        this.editTitle = ''
+        this.isMenu = false;
+        this.isButton = false;
+        this.$refs.menuForm.resetFields();
+        delete this.menuForm.id;
+        this.editTitle = '';
       },
       cancelAdd () {
-        this.menuModalVisible = false
+        this.menuModalVisible = false;
       },
       handleReset () {
-        this.$refs.menuForm.resetFields()
-        this.editStatus = true
-        this.menuForm.status = 0
+        this.$refs.menuForm.resetFields();
+        this.editStatus = true;
+        this.menuForm.status = 0;
       },
       changeEditSwitch (v) {
         if (v) {
-          this.menuForm.status = 0
+          this.menuForm.status = 0;
         } else {
-          this.menuForm.status = -1
+          this.menuForm.status = -1;
         }
       },
       submitEdit () {
         this.$refs.menuForm.validate(valid => {
           if (valid) {
             if (!this.menuForm.id) {
-              this.$Message.warning('请先点击选择要修改的菜单节点')
-              return
+              this.$Message.warning('请先点击选择要修改的菜单节点');
+              return;
             }
-            this.submitLoading = true
+            this.submitLoading = true;
             if (this.menuForm.sortOrder === null) {
-              this.menuForm.sortOrder = ''
+              this.menuForm.sortOrder = '';
             }
             if (this.menuForm.buttonType === null) {
-              this.menuForm.buttonType = ''
+              this.menuForm.buttonType = '';
             }
             if (this.menuForm.type == 1) {
-              this.menuForm.name = ''
-              this.menuForm.icon = ''
-              this.menuForm.component = ''
+              this.menuForm.name = '';
+              this.menuForm.icon = '';
+              this.menuForm.component = '';
             }
             let params = {...this.menuForm};
             delete params.updateTime;
@@ -358,72 +358,72 @@
             delete params.other;
             delete params.permTypes;
             addPermission(params).then(data => {
-              this.submitLoading = false
-              this.$Message.success('编辑成功')
-              this.init()
-              this.menuModalVisible = false
+              this.submitLoading = false;
+              this.$Message.success('编辑成功');
+              this.init();
+              this.menuModalVisible = false;
             }).catch(data => {})
           }
         })
       },
       changeAddSwitch (v) {
         if (v) {
-          this.menuFormAdd.status = 0
+          this.menuFormAdd.status = 0;
         } else {
-          this.menuFormAdd.status = -1
+          this.menuFormAdd.status = -1;
         }
       },
       submitAdd () {
         this.$refs.menuFormAdd.validate(valid => {
           if (valid) {
-            this.submitLoading = true
+            this.submitLoading = true;
             if (this.menuFormAdd.sortOrder === null) {
-              this.menuFormAdd.sortOrder = ''
+              this.menuFormAdd.sortOrder = '';
             }
             if (this.menuFormAdd.buttonType === null) {
-              this.menuFormAdd.buttonType = ''
+              this.menuFormAdd.buttonType = '';
             }
             if (this.menuFormAdd.type == 1) {
-              this.menuFormAdd.name = ''
-              this.menuFormAdd.icon = ''
-              this.menuFormAdd.component = ''
+              this.menuFormAdd.name = '';
+              this.menuFormAdd.icon = '';
+              this.menuFormAdd.component = '';
             }
             addPermission(this.menuFormAdd).then(data => {
-              this.submitLoading = false
-              this.$Message.success('添加成功')
-              this.init()
-              this.menuModalVisible = false
+              this.submitLoading = false;
+              this.$Message.success('添加成功');
+              this.init();
+              this.menuModalVisible = false;
             }).catch(data => {})
           }
         })
       },
       addMenu () {
         if (this.menuForm.id == '' || this.menuForm.id == null) {
-          this.$Message.warning('请先点击选择一个菜单权限节点')
-          return
+          this.$Message.warning('请先点击选择一个菜单权限节点');
+          return;
         }
-        this.parentTitle = this.menuForm.title
-        this.modalTitle = '添加菜单权限(可拖动)'
-        this.showParent = true
-        let type = 0
+        this.parentTitle = this.menuForm.title;
+        this.modalTitle = '添加菜单权限(可拖动)';
+        this.showParent = true;
+        let type = 0;
         if (this.menuForm.level === 1) {
-          type = 0
-          this.isMenuAdd = true
-          this.isButtonAdd = false
+          type = 0;
+          this.isMenuAdd = true;
+          this.isButtonAdd = false;
         } else if (this.menuForm.level === 2) {
-          type = 1
-          this.isMenuAdd = false
-          this.isButtonAdd = true
+          type = 1;
+          this.isMenuAdd = false;
+          this.isButtonAdd = true;
         } else if (this.menuForm.level === 3) {
           this.$Modal.error({
             title: '抱歉，不能添加啦',
             content: '仅支持2级菜单目录'
-          })
-          return
+          });
+          return;
         } else {
-          type = 0
-          this.isMenuAdd = false
-          this.isButtonAdd = false
+          type = 0;
+          this.isMenuAdd = false;
+          this.isButtonAdd = false;
         }
         this.menuFormAdd = {
           type: type,
@@ -432,46 +432,46 @@
           sortOrder: 1,
           buttonType: '',
           status: 0
-        }
+        };
         this.menuModalVisible = true
       },
       addRootMenu () {
-        this.modalTitle = '添加一级菜单(可拖动)'
-        this.isMenuAdd = true
-        this.isButtonAdd = false
-        this.showParent = false
+        this.modalTitle = '添加一级菜单(可拖动)';
+        this.isMenuAdd = true;
+        this.isButtonAdd = false;
+        this.showParent = false;
         this.menuFormAdd = {
           type: 0,
           level: 1,
           sortOrder: 1,
           status: 0
-        }
-        this.menuModalVisible = true
+        };
+        this.menuModalVisible = true;
       },
       changeSelect (v) {
-        this.selectCount = v.length
-        this.selectList = v
+        this.selectCount = v.length;
+        this.selectList = v;
       },
       delAll () {
         if (this.selectCount <= 0) {
-          this.$Message.warning('您还未勾选要删除的数据')
-          return
+          this.$Message.warning('您还未勾选要删除的数据');
+          return;
         }
         this.$Modal.confirm({
           title: '确认删除',
           content: '您确认要删除所选的 ' + this.selectCount + ' 条数据?',
           onOk: () => {
-            let ids = ''
+            let ids = '';
             this.selectList.forEach(function (e) {
               ids += e.id + ','
-            })
-            ids = ids.substring(0, ids.length - 1)
+            });
+            ids = ids.substring(0, ids.length - 1);
             deletePermission(ids).then(data => {
-              this.$Message.success('删除成功')
-              this.selectList = []
-              this.selectCount = 0
-              this.canelEdit()
-              this.init()
+              this.$Message.success('删除成功');
+              this.selectList = [];
+              this.selectCount = 0;
+              this.canelEdit();
+              this.init();
             }).catch(data => {})
           }
         })

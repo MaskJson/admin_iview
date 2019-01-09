@@ -217,63 +217,63 @@
     },
     methods: {
       init () {
-        this.getRoleList()
+        this.getRoleList();
         // 获取所有菜单权限树
-        this.getPermList()
+        this.getPermList();
       },
       changePage (v) {
-        this.pageNumber = v
-        this.getRoleList()
-        this.clearSelectAll()
+        this.pageNumber = v;
+        this.getRoleList();
+        this.clearSelectAll();
       },
       changePageSize (v) {
-        this.pageSize = v
-        this.getRoleList()
+        this.pageSize = v;
+        this.getRoleList();
       },
       changeSort (e) {
-        this.sortColumn = e.key
-        this.sortType = e.order
+        this.sortColumn = e.key;
+        this.sortType = e.order;
         if (e.order === 'normal') {
           this.sortType = ''
         }
         this.getRoleList()
       },
       getRoleList () {
-        this.loading = true
+        this.loading = true;
         let params = {
           pageNumber: this.pageNumber,
           pageSize: this.pageSize,
           sort: this.sortColumn,
           order: this.sort
-        }
+        };
         getRoleByPage(params).then(data => {
-          this.loading = false
-          this.data = data.content
-          this.total = data.totalElements
+          this.loading = false;
+          this.data = data.content;
+          this.total = data.totalElements;
         }).catch(data => {
-          this.loading = false
+          this.loading = false;
         })
       },
       getPermList () {
-        this.treeLoading = true
+        this.treeLoading = true;
         getAllPermissionList().then(data => {
-          this.treeLoading = false
-          this.deleteDisableNode(data)
-          this.permData = data
+          this.treeLoading = false;
+          this.deleteDisableNode(data);
+          this.permData = data;
         }).catch(data => {
-          this.treeLoading = false
+          this.treeLoading = false;
         })
       },
       // 递归标记禁用节点
       deleteDisableNode (permData) {
-        let that = this
+        let that = this;
         permData.forEach(function (e) {
           if (e.status === -1) {
-            e.title = '[已禁用] ' + e.title
-            e.disabled = true
+            e.title = '[已禁用] ' + e.title;
+            e.disabled = true;
           }
           if (e.children && e.children.length > 0) {
-            that.deleteDisableNode(e.children)
+            that.deleteDisableNode(e.children);
           }
         })
       },
@@ -288,16 +288,16 @@
             const params = {
               roleName: this.roleForm.roleName,
               description: this.roleForm.description
-            }
+            };
             if (this.modalType !==0) {
               params.id = this.roleForm.id;
             }
             this.submitLoading = true;
             handler(params).then(data => {
               this.submitLoading = false;
-              this.$Message.success('操作成功')
-              this.getRoleList()
-              this.roleModalVisible = false
+              this.$Message.success('操作成功');
+              this.getRoleList();
+              this.roleModalVisible = false;
             }).catch(data => {
               this.submitLoading = false;
             })
@@ -305,151 +305,151 @@
         })
       },
       addRole () {
-        this.modalType = 0
-        this.modalTitle = '添加角色'
-        this.$refs.roleForm.resetFields()
-        delete this.roleForm.id
-        this.roleModalVisible = true
+        this.modalType = 0;
+        this.modalTitle = '添加角色';
+        this.$refs.roleForm.resetFields();
+        delete this.roleForm.id;
+        this.roleModalVisible = true;
       },
       edit (v) {
-        this.modalType = 1
-        this.modalTitle = '编辑角色'
+        this.modalType = 1;
+        this.modalTitle = '编辑角色';
         // 转换null为""
         for (let attr in v) {
           if (v[attr] === null) {
-            v[attr] = ''
+            v[attr] = '';
           }
         }
-        let str = JSON.stringify(v)
-        let roleInfo = JSON.parse(str)
-        this.roleForm = roleInfo
-        this.roleModalVisible = true
+        let str = JSON.stringify(v);
+        let roleInfo = JSON.parse(str);
+        this.roleForm = roleInfo;
+        this.roleModalVisible = true;
       },
       remove (v) {
         this.$Modal.confirm({
           title: '确认删除',
           content: '您确认要删除角色 ' + v.roleName + ' ?',
           onOk: () => {
-            this.operationLoading = true
+            this.operationLoading = true;
             deleteRole(v.id).then(data => {
-              this.operationLoading = false
-              this.$Message.success('删除成功')
-              this.getRoleList()
+              this.operationLoading = false;
+              this.$Message.success('删除成功');
+              this.getRoleList();
             }).catch(data => {
-              this.operationLoading = false
+              this.operationLoading = false;
             })
           }
         })
       },
       clearSelectAll () {
-        this.$refs.table.selectAll(false)
+        this.$refs.table.selectAll(false);
       },
       changeSelect (e) {
-        this.selectList = e
-        this.selectCount = e.length
+        this.selectList = e;
+        this.selectCount = e.length;
       },
       delAll () {
         if (this.selectCount <= 0) {
-          this.$Message.warning('您还未选择要删除的数据')
-          return
+          this.$Message.warning('您还未选择要删除的数据');
+          return;
         }
         this.$Modal.confirm({
           title: '确认删除',
           content: '您确认要删除所选的 ' + this.selectCount + ' 条数据?',
           onOk: () => {
-            let ids = ''
+            let ids = '';
             this.selectList.forEach(function (e) {
               ids += e.id + ','
-            })
-            ids = ids.substring(0, ids.length - 1)
-            this.operationLoading = true
+            });
+            ids = ids.substring(0, ids.length - 1);
+            this.operationLoading = true;
             deleteRole(ids).then(res => {
-              this.operationLoading = false
-              this.$Message.success('删除成功')
-              this.clearSelectAll()
-              this.getRoleList()
+              this.operationLoading = false;
+              this.$Message.success('删除成功');
+              this.clearSelectAll();
+              this.getRoleList();
             }).catch(data => {
-              this.operationLoading = false
+              this.operationLoading = false;
             })
           }
         })
       },
       editPerm (v) {
-        this.editRolePermId = v.id
+        this.editRolePermId = v.id;
         // 匹配勾选
-        let rolePerms = v.permissions
+        let rolePerms = v.permissions;
         // 递归判断子节点
-        this.checkPermTree(this.permData, rolePerms)
-        this.permModalVisible = true
+        this.checkPermTree(this.permData, rolePerms);
+        this.permModalVisible = true;
       },
       // 递归判断子节点
       checkPermTree (permData, rolePerms) {
-        let that = this
+        let that = this;
         permData.forEach(function (p) {
           if (that.hasPerm(p, rolePerms)) {
-            p.selected = true
+            p.selected = true;
           } else {
-            p.selected = false
+            p.selected = false;
           }
           if (p.children && p.children.length > 0) {
-            that.checkPermTree(p.children, rolePerms)
+            that.checkPermTree(p.children, rolePerms);
           }
         })
       },
       // 判断角色拥有的权限节点勾选
       hasPerm (p, rolePerms) {
-        let flag = false
+        let flag = false;
         if (!rolePerms) {
-          return false
+          return false;
         }
         for (let i = 0; i < rolePerms.length; i++) {
           if (p.id === rolePerms[i].id) {
-            flag = true
-            break
+            flag = true;
+            break;
           }
         }
         if (flag) {
-          return true
+          return true;
         }
-        return false
+        return false;
       },
       // 全选反选
       selectTreeAll () {
-        this.selectAllFlag = !this.selectAllFlag
-        let select = this.selectAllFlag
+        this.selectAllFlag = !this.selectAllFlag;
+        let select = this.selectAllFlag;
         this.selectedTreeAll(this.permData, select)
       },
       // 递归全选节点
       selectedTreeAll (permData, select) {
-        let that = this
+        let that = this;
         permData.forEach(function (e) {
-          e.selected = select
+          e.selected = select;
           if (e.children && e.children.length > 0) {
-            that.selectedTreeAll(e.children, select)
+            that.selectedTreeAll(e.children, select);
           }
         })
       },
       submitPermEdit () {
-        this.submitPermLoading = true
-        let permIds = []
-        let selectedNodes = this.$refs.tree.getSelectedNodes()
+        this.submitPermLoading = true;
+        let permIds = [];
+        let selectedNodes = this.$refs.tree.getSelectedNodes();
         selectedNodes.forEach(function (e) {
-          permIds.push(e.id)
-        })
+          permIds.push(e.id);
+        });
         editRolePerm({
           roleId: this.editRolePermId,
           permIds: permIds.join(',')
         }).then(data => {
-          this.submitPermLoading = false
-          this.$Message.success('操作成功')
-          this.getRoleList()
-          this.permModalVisible = false
+          this.submitPermLoading = false;
+          this.$Message.success('操作成功');
+          this.getRoleList();
+          this.permModalVisible = false;
         }).catch(data => {
-          this.submitPermLoading = false
+          this.submitPermLoading = false;
         })
       },
       cancelPermEdit () {
-        this.permModalVisible = false
+        this.permModalVisible = false;
       }
     },
     mounted () {

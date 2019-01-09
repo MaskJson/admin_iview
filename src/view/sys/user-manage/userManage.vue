@@ -1,6 +1,3 @@
-<style lang="less">
-  @import "./userManage.less";
-</style>
 <template>
   <div class="search">
     <Row>
@@ -375,131 +372,128 @@
     methods: {
       init () {
         this.accessToken = {
-          accessToken: this.getStore('accessToken')
+          accessToken: this.getStore('accessToken');
         }
         // this.initDepartmentData();
         this.getUserList()
         // this.initDepartmentTreeData();
       },
       changePage (v) {
-        this.searchForm.page = v
-        this.getUserList()
-        this.clearSelectAll()
+        this.searchForm.page = v;
+        this.getUserList();
+        this.clearSelectAll();
       },
       changePageSize (v) {
-        this.searchForm.size = v
-        this.getUserList()
+        this.searchForm.size = v;
+        this.getUserList();
       },
       selectDateRange (v) {
         if (v) {
-          this.searchForm.startDate = v[0]
-          this.searchForm.endDate = v[1]
+          this.searchForm.startDate = v[0];
+          this.searchForm.endDate = v[1];
         }
       },
       getUserList () {
         // 多条件搜索用户列表
-        this.loading = true
+        this.loading = true;
         const params = {...this.searchForm};
         params.page--;
         getUserListData(params).then(data => {
-          this.loading = false
-          this.data = data.content
-          this.total = data.totalElements
+          this.loading = false;
+          this.data = data.content;
+          this.total = data.totalElements;
         }).catch(data => {
           this.loading = false;
         })
       },
       handleSearch () {
-        this.searchForm.pageNumber = 1
-        this.searchForm.pageSize = 10
+        this.searchForm.pageNumber = 1;
+        this.searchForm.pageSize = 10;
         this.getUserList()
       },
       handleReset () {
-        this.$refs.searchForm.resetFields()
-        this.searchForm.pageNumber = 1
-        this.searchForm.pageSize = 10
-        this.selectDate = null
-        this.searchForm.startDate = ''
-        this.searchForm.endDate = ''
-        this.selectDep = []
-        this.searchForm.departmentId = ''
+        this.$refs.searchForm.resetFields();
+        this.searchForm.pageNumber = 1;
+        this.searchForm.pageSize = 10;
+        this.selectDate = null;
+        this.searchForm.startDate = '';
+        this.searchForm.endDate = '';
+        this.selectDep = [];
+        this.searchForm.departmentId = '';
         // 重新加载数据
         this.getUserList()
       },
       changeSort (e) {
-        this.searchForm.sort = e.key
-        this.searchForm.order = e.order
+        this.searchForm.sort = e.key;
+        this.searchForm.order = e.order;
         if (e.order === 'normal') {
           this.searchForm.order = ''
         }
         this.getUserList()
       },
       getAllRoleList () {
-        let self = this
+        let self = this;
         getAllRoleList().then(data => {
-          self.roleList = data
+          self.roleList = data;
         }).catch(data => {})
       },
       cancelUser () {
-        this.userModalVisible = false
+        this.userModalVisible = false;
       },
       submitUser () {
         this.$refs.userForm.validate(valid => {
           if (valid) {
             if (this.modalType === 0) {
               // 添加用户 避免编辑后传入id
-              delete this.userForm.id
-              delete this.userForm.avatar
-              delete this.userForm.permissions
-              if (
-                this.userForm.password == '' ||
-                this.userForm.password == undefined
-              ) {
-                this.errorPass = '密码不能为空'
-                return
+              delete this.userForm.id;
+              delete this.userForm.avatar;
+              delete this.userForm.permissions;
+              if (this.userForm.password == '' || this.userForm.password == undefined) {
+                this.errorPass = '密码不能为空';
+                return;
               }
               if (this.userForm.password.length < 6) {
-                this.errorPass = '密码长度不得少于6位'
-                return
+                this.errorPass = '密码长度不得少于6位';
+                return;
               }
               const params = JSON.parse(JSON.stringify(this.userForm));
               params.roles = params.roles.map(item => {
-                return {id: item}
+                return {id: item};
               });
-              this.submitLoading = true
+              this.submitLoading = true;
               addUser(params).then(res => {
-                this.submitLoading = false
-                this.$Message.success('操作成功')
-                this.getUserList()
-                this.userModalVisible = false
+                this.submitLoading = false;
+                this.$Message.success('操作成功');
+                this.getUserList();
+                this.userModalVisible = false;
               }).catch(data => {
-                this.submitLoading = false
+                this.submitLoading = false;
               })
             } else {
               // 编辑
-              this.submitLoading = true
+              this.submitLoading = true;
               const params = JSON.parse(JSON.stringify(this.userForm));
-              console.log(params.roles)
+              console.log(params.roles);
               params.roles = params.roles.map(item => {
-                return {id: item}
+                return {id: item};
               });
-              delete params.createTime
-              delete params.permissions
-              delete params.other
+              delete params.createTime;
+              delete params.permissions;
+              delete params.other;
               editUser(params).then(res => {
-                this.submitLoading = false
-                this.$Message.success('操作成功')
-                this.getUserList()
-                this.userModalVisible = false
+                this.submitLoading = false;
+                this.$Message.success('操作成功');
+                this.getUserList();
+                this.userModalVisible = false;
               }).catch(data => {
-                this.submitLoading = false
+                this.submitLoading = false;
               })
             }
           }
         })
       },
       viewPic () {
-        this.viewImage = true
+        this.viewImage = true;
       },
       handleFormatError (file) {
         this.$Notice.warning({
@@ -514,69 +508,69 @@
         this.$Notice.warning({
           title: '文件大小过大',
           desc: '所选文件‘ ' + file.name + ' ’大小过大, 不得超过 5M.'
-        })
+        });
       },
       beforeUpload () {
         if (!this.$route.meta.permTypes.includes('upload')) {
-          this.$Message.error('此处您没有上传权限(为演示功能，该按钮未配置隐藏)')
-          return false
+          this.$Message.error('此处您没有上传权限(为演示功能，该按钮未配置隐藏)');
+          return false;
         }
-        return true
+        return true;
       },
       handleSuccess (res, file) {
         if (res.success === true) {
-          file.url = res.result
-          this.userForm.avatar = res.result
+          file.url = res.result;
+          this.userForm.avatar = res.result;
         } else {
-          this.$Message.error(res.message)
+          this.$Message.error(res.message);
         }
       },
       handleError (error, file, fileList) {
-        this.$Message.error(error.toString())
+        this.$Message.error(error.toString());
       },
       add () {
-        this.modalType = 0
-        this.modalTitle = '添加用户'
-        this.$refs.userForm.resetFields()
-        this.userModalVisible = true
+        this.modalType = 0;
+        this.modalTitle = '添加用户';
+        this.$refs.userForm.resetFields();
+        this.userModalVisible = true;
       },
       edit (v) {
-        this.modalType = 1
-        this.modalTitle = '编辑用户'
-        this.$refs.userForm.resetFields()
+        this.modalType = 1;
+        this.modalTitle = '编辑用户';
+        this.$refs.userForm.resetFields();
         // 转换null为""
         for (let attr in v) {
           if (v[attr] === null) {
-            v[attr] = ''
+            v[attr] = '';
           }
         }
 
-        let str = JSON.stringify(v)
-        let userInfo = JSON.parse(str)
-        this.userForm = userInfo
-        let selectRolesId = []
+        let str = JSON.stringify(v);
+        let userInfo = JSON.parse(str);
+        this.userForm = userInfo;
+        let selectRolesId = [];
         const roles = this.userForm.roles || [];
         roles.forEach(function (e) {
-          selectRolesId.push(e.id)
-        })
-        this.userForm.roles = selectRolesId
-        this.userModalVisible = true
+          selectRolesId.push(e.id);
+        });
+        this.userForm.roles = selectRolesId;
+        this.userModalVisible = true;
       },
       enable (id, status, nickName) {
         this.$Modal.confirm({
           title: `确认${status == 0 ? '启用' : '禁用'}`,
           content: `您确认要${status == 0 ? '启用' : '禁用'}用户 ` + nickName + ' ?',
           onOk: () => {
-            this.operationLoading = true
+            this.operationLoading = true;
             enableUser({
               id: id,
               status: status
             }).then(data => {
-              this.operationLoading = false
-              this.$Message.success('操作成功')
-              this.getUserList()
+              this.operationLoading = false;
+              this.$Message.success('操作成功');
+              this.getUserList();
             }).catch(data => {
-              this.operationLoading = false
+              this.operationLoading = false;
             })
           }
         })
@@ -586,36 +580,37 @@
           title: '确认删除',
           content: '您确认要删除用户吗？',
           onOk: () => {
-            this.operationLoading = true
+            this.operationLoading = true;
             deleteUser(ids).then(data => {
-              this.operationLoading = false
-              this.$Message.success('删除成功')
-              this.getUserList()
+              this.operationLoading = false;
+              this.$Message.success('删除成功');
+              this.getUserList();
             }).catch(data => {
-              this.operationLoading = false
+              this.operationLoading = false;
             })
           }
         })
       },
       showSelect (e) {
-        this.exportData = e
-        this.selectList = e
-        this.selectCount = e.length
+        this.selectList = e;
       },
       clearSelectAll () {
-        this.$refs.table.selectAll(false)
+        this.$refs.table.selectAll(false);
       },
       delAll () {
         if (this.selectCount <= 0) {
-          this.$Message.warning('您还未选择要删除的数据')
-          return
+          this.$Message.warning('您还未选择要删除的数据');
+          return;
         }
         this.remove(this.selectList.map(item => item.id));
       }
     },
     mounted () {
-      this.init()
-      this.getAllRoleList()
+      this.init();
+      this.getAllRoleList();
     }
   }
 </script>
+<style lang="less">
+  @import "./userManage.less";
+</style>

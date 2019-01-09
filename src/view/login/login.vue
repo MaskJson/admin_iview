@@ -56,7 +56,6 @@
           Cookies.set("userInfo", JSON.stringify(data.user), {
             expires: 7
           });
-
           this.setStore("userInfo", data.user);
           //头像
           this.$store.commit("setAvatarPath", data.user.avatar);
