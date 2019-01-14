@@ -71,8 +71,8 @@
             <Option :value="1">管理员</Option>
           </Select>
         </FormItem>
-        <FormItem label="角色分配" prop="roles">
-          <Select v-model="userForm.roles" multiple>
+        <FormItem label="角色分配" prop="roleId">
+          <Select v-model="userForm.roleId">
             <Option v-for="item in roleList" :value="item.id" :key="'role-' + item.id" :label="item.roleName">
               <!-- <div style="display:flex;flex-direction:column"> -->
               <span style="margin-right:10px;">{{ item.roleName }}</span>
@@ -161,7 +161,7 @@
           status: 0,
           nickName: '',
           avatar: 'https://s1.ax1x.com/2018/05/19/CcdVQP.png',
-          roles: [],
+          roleId: null,
           // departmentId: "",
           // departmentTitle: ""
         },
@@ -172,8 +172,8 @@
           username: [
             { required: true, message: '账号不能为空', trigger: 'blur' }
           ],
-          roles: [
-            { required: true, type: 'array', message: '角色不能为空', trigger: 'change' }
+          roleId: [
+            { required: true, type: 'number', message: '角色不能为空', trigger: 'change' }
           ]
           // mobile: [
           //   {required: true, message: "手机号不能为空", trigger: "blur"},
@@ -218,12 +218,12 @@
           },
           {
             title: '用户角色',
-            key: 'roles',
+            key: 'role',
             align: 'center',
             width: 180,
             render: (h, params) => {
-              const roles = params.row.roles || [];
-              return h('span',roles.map(item => item.roleName).join('、'))
+              const role = params.row.role || {};
+              return h('span',`${role.roleName}(${role.description})`)
             }
           },
           {
@@ -457,9 +457,6 @@
                 return;
               }
               const params = JSON.parse(JSON.stringify(this.userForm));
-              params.roles = params.roles.map(item => {
-                return {id: item};
-              });
               this.submitLoading = true;
               addUser(params).then(res => {
                 this.submitLoading = false;
@@ -473,10 +470,6 @@
               // 编辑
               this.submitLoading = true;
               const params = JSON.parse(JSON.stringify(this.userForm));
-              console.log(params.roles);
-              params.roles = params.roles.map(item => {
-                return {id: item};
-              });
               delete params.createTime;
               delete params.permissions;
               delete params.other;
@@ -548,12 +541,6 @@
         let str = JSON.stringify(v);
         let userInfo = JSON.parse(str);
         this.userForm = userInfo;
-        let selectRolesId = [];
-        const roles = this.userForm.roles || [];
-        roles.forEach(function (e) {
-          selectRolesId.push(e.id);
-        });
-        this.userForm.roles = selectRolesId;
         this.userModalVisible = true;
       },
       enable (id, status, nickName) {
